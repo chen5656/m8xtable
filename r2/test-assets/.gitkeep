@@ -1,0 +1,6 @@
+# Place test media files here before running upload-test-data.ts
+# Required files:
+#   sample-cover.jpg   - a recipe cover image
+#   sample-step.jpg    - a recipe step image
+#   sample-avatar.jpg  - a user avatar
+
