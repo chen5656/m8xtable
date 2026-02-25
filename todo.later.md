@@ -1,4 +1,7 @@
 Now, finish my app, no stop until you finished all the features in Plan.md
+Now start on implementation. No stop until you finished the whole app with every feature in the plan, and every feature need to work as expected. 
+
+Add test based on the plan. 
 
 M1Ntable
 
