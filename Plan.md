@@ -1,6 +1,6 @@
 # Canvas & Clove — Product Plan
 
-A cross-platform cooking recipe collection app (iPhone, iPad). **Online only** — no offline mode, no sync layer. 
+A cross-platform cooking recipe collection app (iPhone, iPad). **Online only** — no offline mode, no sync layer.
 
 ---
 
@@ -8,7 +8,7 @@ A cross-platform cooking recipe collection app (iPhone, iPad). **Online only** �
 
 | Aspect | Decision |
 |--------|----------|
-| **Platforms** | iPhone, iPad (Expo) 
+| **Platforms** | iPhone, iPad (Expo) |
 | **Network** | Online only; no offline storage or sync |
 | **Core value** | Collect, organize |
 
@@ -17,13 +17,12 @@ A cross-platform cooking recipe collection app (iPhone, iPad). **Online only** �
 ## 2. Tech stack
 
 | Layer | Choice | Notes |
-|-------|--------|------|
+|-------|--------|-------|
 | **App** | Expo (React Native) | Single codebase for iOS + Web |
-| **Auth** | ios only, use iphone sign in with apple |
-| **Database** | Cloudflare D1 (single shared DB) | SQLite-compatible; one database for one user |
+| **Auth** | iOS only; Sign in with Apple | |
+| **Database** | Cloudflare D1 (single shared DB) | SQLite-compatible; one database per user |
 | **File storage** | Cloudflare R2 | Images, video |
-| **AI (text/recipe)** | Gemini via Cloudflare Worker + AI Gateway | Token usage returned per request for billing |
-| **AI (voice)** | OpenAI gpt-audio-mini via Cloudflare Worker | Voice-to-text; token counted toward user limit |
+| **AI providers** | Gemini, OpenAI, Claude, OpenRouter, Qwen, GLM | API keys stored per-user in Settings; direct connection from app to provider — no intermediary gateway |
 | **i18n** | Lingui | All supported locales (see section 9.3) |
 | **Error tracking** | Sentry | Logging and error monitoring |
 
@@ -43,12 +42,14 @@ A cross-platform cooking recipe collection app (iPhone, iPad). **Online only** �
 | **Servings** | servings_min, servings_max |
 | **Difficulty** | Easy / Medium / Hard |
 | **Nutrition** | Calories, macros: carbs, protein, fat |
-| **Multi-language** | Per-recipe translations; user adds manually or via Gemini |
-| **Flags** | is_favorite (boolean), is_deleted, deleted_at |
+| **Multi-language** | Per-recipe translations; user adds manually or via AI |
+| **Flags** | is_favorite (boolean), is_draft (boolean), is_deleted, deleted_at |
+| **Source** | forked_from_url (if imported from URL) |
 
-### 3.2 User 
+### 3.2 User
 
-- **Credit balance**
+- **Profile**: Display name, avatar.
+- **API keys**: Per-provider keys (Gemini, OpenAI, Claude, OpenRouter, Qwen, GLM) stored securely on-device in the device keychain; used for direct AI calls.
 
 ### 3.3 Collections
 
@@ -65,8 +66,7 @@ A cross-platform cooking recipe collection app (iPhone, iPad). **Online only** �
 - Boolean flag on recipe (`is_favorite`).
 - Toggle gallery to show favorites only.
 
-### 3.6 Recycle bin ( skip for now, user can add to recycle bin, but no able to see it)
-
+### 3.6 Recycle bin (skip for now — user can delete to recycle bin, but cannot view it)
 
 ### 3.8 Shopping list
 
@@ -84,17 +84,26 @@ A cross-platform cooking recipe collection app (iPhone, iPad). **Online only** �
 - Lives in the bottom tab bar.
 - Calendar view where user can add recipes or free-text notes to any date.
 
-
 ---
 
-## 4. Users, limits & monetization
+## 4. API key management
 
-| **One-time add-on** | +2000 credits (no expiry) | $10 
+Each user stores their own API keys for AI providers in the app Settings. AI requests are made directly from the device to the provider — there is no server-side proxy or gateway for AI calls.
 
-### Token rules
+Supported providers:
 
-- Tokens deducted **per AI request** (URL parse, image gen, page gen, recipe AI generation, translation, voice-to-text, etc.).
-- **UI**: Token usage shown as a progress bar with percentage inside the user profile badge. Each AI action shows "This used X credits" feedback.
+| Provider | Used for |
+|----------|----------|
+| **Gemini** | Recipe generation, translation, image generation, URL parsing |
+| **OpenAI** | Voice-to-text (gpt-4o-audio-preview) |
+| **Claude** | Alternative recipe / text generation |
+| **OpenRouter** | Multi-provider routing (optional) |
+| **Qwen** | Alternative text generation |
+| **GLM** | Alternative text generation |
+
+- Keys are stored securely in the device keychain.
+- User can add, update, or remove keys at any time.
+- If no API key is configured for a required provider, the feature is disabled and the user is prompted to add one in Settings.
 
 ---
 
@@ -111,9 +120,9 @@ Request only when the feature is first used; explain purpose in permission dialo
 
 ### 6.1 Auth & profile
 
-- **Login / sign-up**:  Apple.
+- **Login / sign-up**: Apple Sign In.
 - **Delete account**: Full deletion with animated UI flow: deleting images, deleting recipes, deleting account. No data retained.
-- **Terms & Privacy**: Shown on login and payment screens.
+- **Terms & Privacy**: Shown on login screen.
   - No data kept after account deletion.
   - We do not share your recipes or generated data with anyone.
   - Data protected with Clerk and Cloudflare.
@@ -121,33 +130,35 @@ Request only when the feature is first used; explain purpose in permission dialo
 
 ### 6.2 Recipe creation (multiple entry points)
 
-No separate "draft" state. Auto-save locally with debounced sync to server (every 5 seconds of inactivity + on leave/background).
-menu - user need to select which way to import. it will always output in the app language. (from scratch/ paste is not applicable for language selection)
+**Draft model**: All new and in-progress recipes exist as device-local drafts until the user explicitly taps **Save**. On Save, the recipe is committed to the server. Drafts are stored on-device only and are **not synced between devices**.
+
+The import menu lets the user select an entry method. Output language always matches the app language (language selection is not applicable for "From scratch" or "From paste").
 
 | Method | Flow |
 |--------|------|
 | **From scratch** | Manual entry of all fields |
 | **From photo (scan)** | User photographs a printed/handwritten recipe; AI extracts and fills in recipe fields |
-| **From photo (dish)** | User photographs a dish; AI identifies the dish give user three options to choose from. - then continue  the **AI generate** flow |
-| **AI generate** | User enters recipe name; Gemini generates full recipe; AI review (section 3.2 vocabulary matching); user edits and saves |
-| **From URL** | User pastes URL; device fetches page content and sends to Gemini Worker; try JSON-LD structured data first, then AI parse; AI review; user edits and saves. Records `forked_from_url`. User can configure default cooking site URLs for quick access |
+| **From photo (dish)** | User photographs a dish; AI identifies the dish and gives three options; user selects one, then continues the **AI generate** flow |
+| **AI generate** | User enters recipe name; AI generates full recipe; user reviews, edits, and saves |
+| **From URL** | User pastes URL; device fetches page content and sends to AI provider; try JSON-LD structured data first, then AI parse; user edits and saves. Records `forked_from_url`. User can configure default cooking site URLs for quick access. **Paywall sites**: try JSON-LD first; if parsing fails, show clear error and offer paste-as-text fallback — no attempt to bypass paywalls. |
 | **From paste** | User pastes plain text or markdown; parsed into recipe fields; user edits and saves |
 
-- **Cover & step images**: if photo scan, use the scan, if from url, use the image from url. if no cover image, ai generated cover image. imgae will use one of the default prompt styles. No automatic step images generation.
-    user can replace the cover image and step images from camera/library OR generate via Gemini (one image at a time; credits cost).
+- **Cover & step images**: if photo scan, use the scanned image; if from URL, use the image from the URL; if no cover image, AI-generate one using a default prompt style. No automatic step-image generation.
+  User can replace cover image and step images from camera/library or generate via AI (one image at a time; requires a configured Gemini API key).
 
 ### 6.3 Recipe editing
 
 - Full edit of all fields; `last_modified_at` updated on save.
-- **Undo**: Session-level undo available while on the edit page(caches in local); lost once user leaves.
+- **Undo**: Session-level undo available while on the edit page (cached locally); lost once user leaves.
+- Unsaved edits remain as a local draft on the current device until Save is tapped.
 
 ### 6.4 Recipe deletion
 
-- Soft delete to recycle bin; 
+- Soft delete to recycle bin.
 
 ### 6.5 Voice & input UX
 
-- **Voice input**: Available on any text input field. Uses OpenAI gpt-audio-mini (via Cloudflare Worker); consumes credits from user limit.
+- **Voice input**: Available on any text input field. Uses OpenAI voice model (requires OpenAI API key in Settings); converts voice to text and fills the active field.
 - **Keyboard**: Never overlaps focused input; "dismiss keyboard" button provided.
 
 ### 6.6 Discovery & organization
@@ -155,11 +166,10 @@ menu - user need to select which way to import. it will always output in the app
 - **Home / gallery**: Grid layout inspired by iPhone Photos.
   - Each tile shows a configurable label (calories, name, servings, cook time, tags, etc.).
   - Eye icon toggle to show/hide labels globally.
-- **Collections**: Same grid layout; see section 3.4 for full details.
+- **Collections**: Same grid layout; see section 3.3 for full details.
 - **Search**: Keyword search by recipe name and/or ingredients. Simple implementation for now.
 - **Filters**: Tag, category, last-edited range, cook time range, servings range, difficulty, calorie range.
-- **Favorites**: toggle to show favorites only (see section 3.5).
-
+- **Favorites**: Toggle to show favorites only (see section 3.5).
 
 ### 6.10 Shopping list
 
@@ -171,9 +181,11 @@ See section 3.9 for full spec. Lives in the bottom tab bar.
 
 ### 6.12 Settings & locale
 
-- **Language**: App UI language follows device setting or no-app override (see section 9.3 for locale list). - user can click the language to go to app's system setting to change the language.
----
+- **Language**: App UI language follows device setting; user can tap the language option to open the system Settings app to change it.
+- **API keys**: User enters and manages API keys for each supported AI provider (Gemini, OpenAI, Claude, OpenRouter, Qwen, GLM). Keys are stored in the device keychain. Each provider shows a status indicator (configured / not configured).
+- **Account**: Manage profile, delete account.
 
+---
 
 ## 9. Non-functional requirements
 
@@ -181,10 +193,10 @@ See section 3.9 for full spec. Lives in the bottom tab bar.
 
 - **Tone**: Sophisticated, exclusive; same design language across all screens.
 - **Balance**: Aesthetics and functionality equally important.
-- **Design System**: 
-1)  8pt grid (spacing only allow 4/8/12/16/24/32/40/48)
-2） 使用 design tokens (color/spacing/radius/shadow/typography),support light/dark
-3）严格排版层级（32/24/20/16/14/12+ 对应行高），每个Card 信息不超过3行风格：克制、中性、留白足、轻边框、轻投影、微动效 （hover/focus）输出：结构说明 + token表+React/Tailwind 可运行代码
+- **Design System**:
+  1. 8pt grid (spacing only: 4 / 8 / 12 / 16 / 24 / 32 / 40 / 48)
+  2. Design tokens (color / spacing / radius / shadow / typography); support light/dark
+  3. Strict typographic hierarchy (32 / 24 / 20 / 16 / 14 / 12 with matching line heights); each card shows no more than 3 lines. Style: restrained, neutral, generous whitespace, light borders, light shadows, subtle micro-animations (hover/focus)
 
 ### 9.2 Implementation
 
@@ -198,7 +210,7 @@ See section 3.9 for full spec. Lives in the bottom tab bar.
 
 ### 9.4 Error handling
 
-- On failure (tokens exhausted, R2 error, Clerk down, etc.): show clear error message.
+- On failure (R2 error, Clerk down, AI provider error, missing API key, etc.): show a clear error message.
 - Provide support links: email contact@aclogics.com + help center https://answer.aclogics.com/ (placeholder domains).
 - All errors logged to Sentry.
 
@@ -217,4 +229,4 @@ See section 3.9 for full spec. Lives in the bottom tab bar.
 | **Home** | Recipe gallery (grid) | — |
 | **Shopping List** | Recipes + aggregated ingredients | Red badge: recipe count |
 | **Meal Plan** | Calendar with recipes and notes | — |
-| **Profile** | Settings, account, token usage | — |
+| **Profile** | Settings, account, API key management | — |
