@@ -1,6 +1,6 @@
 # M8x Table — Test Suite
 
-Tests are written in Jest + TypeScript. They cover every feature area described in `Plan.md` and `todo.later.md`.
+Tests are written in Jest + TypeScript. They cover every feature area in `Plan.md`.
 
 **Important**: Tests are written ahead of implementation. Feature implementations are `TODO` stubs.
 
@@ -18,9 +18,6 @@ Tests are written in Jest + TypeScript. They cover every feature area described 
 | `tests/search-filter.test.ts` | Keyword search and filters |
 | `tests/r2-media.test.ts` | R2 presigned URL, upload, delete |
 | `tests/ai-providers.test.ts` | All AI provider integrations |
-| `tests/recipe-pages.test.ts` | Custom HTML recipe page generation |
-| `tests/sharing.test.ts` | Share links, share as image, fork system |
-| `tests/books.test.ts` | Book/EPUB generation (Premium) |
 | `tests/i18n.test.ts` | Localisation (en, zh-Hans) |
 | `tests/error-handling.test.ts` | Error messages, Sentry logging |
 | `tests/settings.test.ts` | API key management, account settings |

@@ -3,110 +3,100 @@
  * Verifies that all required tables and columns exist in D1.
  */
 
-import { describe, it, expect, beforeAll } from '@jest/globals';
+import { describe, it, expect } from '@jest/globals';
 
 // TODO: import the D1 client / test database helper
 // import { getTestDb } from '../helpers/db';
 
-describe('D1 Schema', () => {
-  // TODO: let db: D1Database;
-  // beforeAll(async () => { db = await getTestDb(); });
+describe('D1 Schema — users', () => {
+  it('has required columns', async () => {
+    // TODO: query PRAGMA table_info('users') and assert columns exist
+    const expected = ['id', 'display_name', 'profile_picture', 'locale', 'created_at', 'updated_at'];
+    expect(expected.length).toBeGreaterThan(0);
+  });
+});
 
-  describe('users table', () => {
-    it('has required columns', async () => {
-      // TODO: query PRAGMA table_info('users') and assert columns exist
-      const columns = ['id', 'display_name', 'profile_picture', 'locale',
-        'monthly_tokens', 'addon_tokens', 'tokens_used', 'tier',
-        'token_reset_date', 'created_at', 'updated_at'];
-      expect(columns.length).toBeGreaterThan(0); // placeholder
-    });
+describe('D1 Schema — recipes', () => {
+  it('has required columns', async () => {
+    const expected = [
+      'id', 'owner_user_id', 'title', 'description', 'cover_image',
+      'category', 'difficulty', 'prep_time', 'cook_time', 'servings_min',
+      'servings_max', 'calories', 'carbs', 'protein', 'fat', 'wine_pairing',
+      'tags', 'tools', 'tips', 'is_favorite', 'is_deleted', 'deleted_at',
+      'forked_from_url', 'video', 'created_at', 'last_modified_at',
+    ];
+    expect(expected.length).toBeGreaterThan(0);
   });
 
-  describe('recipes table', () => {
-    it('has required columns', async () => {
-      const columns = ['id', 'owner_user_id', 'title', 'description', 'cover_image',
-        'category', 'difficulty', 'prep_time', 'cook_time', 'servings_min',
-        'servings_max', 'calories', 'carbs', 'protein', 'fat', 'wine_pairing',
-        'tags', 'is_favorite', 'is_draft', 'is_deleted', 'deleted_at',
-        'tools', 'tips', 'star_count', 'fork_count', 'forked_from_url',
-        'forked_from_recipe_id', 'fork_date', 'video', 'created_at', 'last_modified_at'];
-      expect(columns.length).toBeGreaterThan(0);
-    });
+  it('difficulty is restricted to easy/medium/hard', async () => {
+    // TODO: attempt to insert with difficulty = 'expert', expect constraint error
+    expect(true).toBe(true);
+  });
+});
 
-    it('difficulty is restricted to easy/medium/hard', async () => {
-      // TODO: attempt to insert a recipe with invalid difficulty and expect error
-      expect(true).toBe(true);
-    });
+describe('D1 Schema — recipe_translations', () => {
+  it('enforces unique (recipe_id, locale)', async () => {
+    // TODO: insert duplicate locale for same recipe, expect constraint violation
+    expect(true).toBe(true);
   });
 
-  describe('ingredients table', () => {
-    it('has sort_order column for ordering', async () => {
-      // TODO: assert column exists
-      expect(true).toBe(true);
-    });
+  it('has tools and tips columns', async () => {
+    // TODO: PRAGMA table_info('recipe_translations'), assert tools and tips present
+    expect(true).toBe(true);
+  });
+});
+
+describe('D1 Schema — ingredients', () => {
+  it('has sort_order column', async () => {
+    expect(true).toBe(true);
+  });
+});
+
+describe('D1 Schema — steps', () => {
+  it('step_type is restricted to prep/active_cook', async () => {
+    // TODO: insert step with step_type = 'bake', expect constraint error
+    expect(true).toBe(true);
   });
 
-  describe('steps table', () => {
-    it('has step_type restricted to prep/active_cook', async () => {
-      // TODO: assert check constraint
-      expect(true).toBe(true);
-    });
+  it('has per-step image and video R2 key columns', async () => {
+    expect(true).toBe(true);
+  });
+});
 
-    it('supports per-step image and video R2 keys', async () => {
-      // TODO: assert image and video columns exist
-      expect(true).toBe(true);
-    });
+describe('D1 Schema — collections', () => {
+  it('visibility is restricted to private/shared/public', async () => {
+    // TODO: insert with visibility = 'hidden', expect constraint error
+    expect(true).toBe(true);
   });
 
-  describe('recipe_translations table', () => {
-    it('enforces unique (recipe_id, locale)', async () => {
-      // TODO: insert duplicate and expect constraint violation
-      expect(true).toBe(true);
-    });
+  it('has is_pinned column defaulting to 0', async () => {
+    // TODO: insert collection, assert is_pinned = 0
+    expect(true).toBe(true);
+  });
+});
 
-    it('has tools and tips columns', async () => {
-      // TODO: assert columns added by migration 0002
-      expect(true).toBe(true);
-    });
+describe('D1 Schema — shopping_list', () => {
+  it('enforces unique (user_id, recipe_id)', async () => {
+    // TODO: insert duplicate, expect constraint violation
+    expect(true).toBe(true);
+  });
+});
+
+describe('D1 Schema — meal_plan', () => {
+  it('meal_type is restricted to breakfast/lunch/dinner/snack/other', async () => {
+    // TODO: insert with meal_type = 'brunch', expect constraint error
+    expect(true).toBe(true);
   });
 
-  describe('collections table', () => {
-    it('visibility is restricted to private/shared/public', async () => {
-      // TODO: assert check constraint
-      expect(true).toBe(true);
-    });
-
-    it('has is_pinned column', async () => {
-      // TODO: assert column added by migration 0002
-      expect(true).toBe(true);
-    });
+  it('recipe_id is set to NULL when the referenced recipe is deleted', async () => {
+    // TODO: delete recipe, assert meal_plan row retained with recipe_id = null
+    expect(true).toBe(true);
   });
+});
 
-  describe('shopping_list table', () => {
-    it('enforces unique (user_id, recipe_id)', async () => {
-      // TODO: insert duplicate and expect constraint violation
-      expect(true).toBe(true);
-    });
-  });
-
-  describe('meal_plan table', () => {
-    it('has meal_type and note columns', async () => {
-      // TODO: assert columns
-      expect(true).toBe(true);
-    });
-  });
-
-  describe('books table', () => {
-    it('status is restricted to queued/processing/completed/failed', async () => {
-      // TODO: assert check constraint
-      expect(true).toBe(true);
-    });
-  });
-
-  describe('custom_categories table', () => {
-    it('enforces unique (user_id, name)', async () => {
-      // TODO: insert duplicate and expect constraint violation
-      expect(true).toBe(true);
-    });
+describe('D1 Schema — custom_categories', () => {
+  it('enforces unique (user_id, name)', async () => {
+    // TODO: insert duplicate category name for same user, expect constraint violation
+    expect(true).toBe(true);
   });
 });

@@ -8,18 +8,22 @@ import { describe, it, expect } from '@jest/globals';
 // import { createRecipe, getRecipe, updateRecipe, deleteRecipe } from '../src/recipes';
 
 describe('Recipe — Draft model (§6.2)', () => {
-  it('new recipe is created with is_draft = 1', async () => {
-    // TODO: createRecipe(), assert is_draft === 1 in DB
+  // Drafts live on-device only; nothing is written to D1 until the user taps Save.
+
+  it('unsaved recipe does not appear in D1', async () => {
+    // TODO: start a new recipe, do NOT tap Save,
+    //       query D1 for the recipe id, assert no row found
     expect(true).toBe(true);
   });
 
-  it('tapping Save sets is_draft = 0 and persists to D1', async () => {
-    // TODO: saveRecipe(), assert is_draft === 0
+  it('tapping Save commits the recipe to D1', async () => {
+    // TODO: saveRecipe(), assert row exists in D1
     expect(true).toBe(true);
   });
 
-  it('draft is stored on-device only and not synced', async () => {
-    // TODO: assert draft does NOT appear in server D1 until saved
+  it('unsaved edits remain as a local draft on the current device until Save', async () => {
+    // TODO: edit an existing recipe, do NOT tap Save,
+    //       refetch from D1, assert original values unchanged
     expect(true).toBe(true);
   });
 });
