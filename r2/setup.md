@@ -37,6 +37,7 @@ Apply:
 
 ```bash
 npx wrangler r2 bucket cors put m8x-table-media --rules r2/cors.json
+npx wrangler r2 bucket cors put m8x-table-media-dev --rules r2/cors.json
 ```
 
 ---
