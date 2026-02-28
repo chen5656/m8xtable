@@ -168,3 +168,22 @@ Items explicitly deferred for future development:
 - 用户可以输入卡片内容，包括标题、内容
 
 (Shared from: https://promptup.net/prompt/chinese-%E6%AF%9B%E7%8E%BB%E7%92%83%E7%89%B9%E6%95%88%E7%9F%A5%E8%AF%86%E5%8D%A1%E7%89%87%E7%94%9F%E6%88%90%E4%B8%93%E5%AE%B6-1a)
+
+### 3.8 Shopping list
+
+- Lives in the bottom tab bar; red badge shows number of recipes added.
+- Each recipe page has an "Add to shopping list" button.
+- **Tab 1 — Recipes**: List of added recipes; can remove one or all.
+- **Tab 2 — Ingredients**: Aggregated from Tab 1 recipes; no manual delete.
+  - Each ingredient shows which recipe(s) it comes from.
+  - If an ingredient appears in multiple recipes, quantities are summed.
+  - Toggle checkbox per ingredient.
+  - Share button: send selected (checked) ingredients via iMessage or Telegram.
+
+### 3.9 Meal plan calendar
+
+- Lives in the bottom tab bar.
+- Calendar view where user can add recipes or free-text notes to any date.
+
+### ai
+- user can define the ai provider and model for each function

@@ -20,7 +20,7 @@ A cross-platform cooking recipe collection app (iPhone, iPad). **Online only** �
 |-------|--------|-------|
 | **App** | Expo (React Native) | Single codebase for iOS + Web |
 | **Auth** | iOS only; Sign in with Apple | |
-| **Database** | Cloudflare D1 (single shared DB) | SQLite-compatible; one database per user |
+| **Database** | Cloudflare D1 | SQLite-compatible; one database per user |
 | **File storage** | Cloudflare R2 | Images, video |
 | **AI providers** | Gemini, OpenAI, Claude, OpenRouter, Qwen, GLM | API keys stored per-user in Settings; direct connection from app to provider — no intermediary gateway |
 | **i18n** | Lingui | All supported locales (see section 9.3) |
@@ -42,17 +42,19 @@ A cross-platform cooking recipe collection app (iPhone, iPad). **Online only** �
 | **Servings** | servings_min, servings_max |
 | **Difficulty** | Easy / Medium / Hard |
 | **Nutrition** | Calories, macros: carbs, protein, fat |
-| **Language** | Stored in the app’s default language only; no per-recipe translations |
+| **Language** | Stored in the app’s default language only |
 | **Flags** | is_favorite (boolean), is_draft (boolean), is_deleted, deleted_at |
 | **Source** | forked_from_url (if imported from URL) |
 
 ### 3.2 User
 
 - **Profile**: Display name, avatar.
-- **API keys**: Per-provider keys (Gemini, OpenAI, Claude, OpenRouter, Qwen, GLM) stored securely on-device in the device keychain; used for direct AI calls.
+- **API keys**: Per-provider keys (Gemini, OpenAI, Claude, OpenRouter, Qwen, GLM) stored securely on-device in the iOS Keychain (`kSecAttrAccessibleWhenUnlockedThisDeviceOnly`); used for direct AI calls.
 
 ### 3.3 Collections
-
+- add, remove recipes to a collection.
+- batch add, user can select multiple recipes and add them to a collection.
+- batch remove, user can select multiple recipes and remove them from a collection.
 - User-created groups of recipes (e.g. "Weeknight", "Holiday").
 - Max 999 collections per user.
 - Recipe can belong to multiple collections.
@@ -70,19 +72,13 @@ A cross-platform cooking recipe collection app (iPhone, iPad). **Online only** �
 
 ### 3.8 Shopping list
 
-- Lives in the bottom tab bar; red badge shows number of recipes added.
-- Each recipe page has an "Add to shopping list" button.
-- **Tab 1 — Recipes**: List of added recipes; can remove one or all.
-- **Tab 2 — Ingredients**: Aggregated from Tab 1 recipes; no manual delete.
-  - Each ingredient shows which recipe(s) it comes from.
-  - If an ingredient appears in multiple recipes, quantities are summed.
-  - Toggle checkbox per ingredient.
-  - Share button: send selected (checked) ingredients via iMessage or Telegram.
+- Lives in the bottom tab bar;
+- add a page for place holder, skip the implementation for now.
 
 ### 3.9 Meal plan calendar
 
 - Lives in the bottom tab bar.
-- Calendar view where user can add recipes or free-text notes to any date.
+- add a page for place holder, skip the implementation for now.
 
 ---
 
@@ -94,16 +90,20 @@ Supported providers:
 
 | Provider | Used for |
 |----------|----------|
-| **Gemini** | Recipe generation,translation, image generation, URL parsing |
-| **OpenAI** | Voice-to-text (gpt-4o-audio-preview) |
-| **Claude** | Alternative recipe / text generation |
+| **Gemini** | Recipe generation,translation, image generation, URL parsing, Voice-to-text |
+| **OpenAI** | Voice-to-text (gpt-4o-audio-preview), Alternative recipe / text generation |
+| **Claude** | Alternative recipe / text generation, Voice-to-text |
 | **OpenRouter** | Multi-provider routing (optional) |
-| **Qwen** | Alternative text generation |
-| **GLM** | Alternative text generation |
+| **Qwen** | Alternative text generation, Voice-to-text |
+| **GLM** | Alternative text generation, Voice-to-text |
 
-- Keys are stored securely in the device keychain.
+- Keys are stored securely in the iOS Keychain (`kSecAttrAccessibleWhenUnlockedThisDeviceOnly`).
 - User can add, update, or remove keys at any time.
+- Key entry supports temporary show/hide while typing, but after Save the full key is never displayed again.
+- After Save, each provider shows only a masked preview (first few + last few characters) and status (`configured` / `not configured`).
+- Available actions after Save: `Replace key` and `Delete key` (no `Reveal full key` action).
 - If no API key is configured for a required provider, the feature is disabled and the user is prompted to add one in Settings.
+- Security notice in Settings: if a device is lost, compromised, or reverse engineered, the user must rotate affected provider API keys immediately.
 
 ---
 
@@ -139,7 +139,7 @@ The import menu lets the user select an entry method. Output language always mat
 | **From scratch** | Manual entry of all fields |
 | **From photo (scan)** | User photographs a printed/handwritten recipe; AI extracts and fills in recipe fields |
 | **From photo (dish)** | User photographs a dish; AI identifies the dish and gives three options; user selects one, then continues the **AI generate** flow |
-| **AI generate** | User enters recipe name; AI generates full recipe; user reviews, edits, and saves |
+| **From dish name** | User enters dish name; AI generates full recipe; user reviews, edits, and saves |
 | **From URL** | User pastes URL; device fetches page content and sends to AI provider; try JSON-LD structured data first, then AI parse; user edits and saves. Records `forked_from_url`. User can configure default cooking site URLs for quick access. **Paywall sites**: try JSON-LD first; if parsing fails, show clear error and offer paste-as-text fallback — no attempt to bypass paywalls. |
 | **From paste** | User pastes plain text or markdown; parsed into recipe fields; user edits and saves |
 
@@ -182,7 +182,7 @@ See section 3.9 for full spec. Lives in the bottom tab bar.
 ### 6.12 Settings & locale
 
 - **Language**: App UI language follows device setting; user can tap the language option to open the system Settings app to change it.
-- **API keys**: User enters and manages API keys for each supported AI provider (Gemini, OpenAI, Claude, OpenRouter, Qwen, GLM). Keys are stored in the device keychain. Each provider shows a status indicator (configured / not configured).
+- **API keys**: User enters and manages API keys for each supported AI provider (Gemini, OpenAI, Claude, OpenRouter, Qwen, GLM). Keys are stored in iOS Keychain (`kSecAttrAccessibleWhenUnlockedThisDeviceOnly`). After save, the UI shows only a masked preview (first/last few characters), never the full key. Actions: `Replace key`, `Delete key`. Each provider shows status (`configured` / `not configured`). Settings includes a notice that users must rotate keys if device is lost or compromised.
 - **Account**: Manage profile, delete account.
 
 ---
