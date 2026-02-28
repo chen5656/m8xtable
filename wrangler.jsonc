@@ -1,23 +1,23 @@
 {
-	"name": "m8x-table",
+	"name": "m8xtable",
 	"compatibility_date": "2024-03-20",
 	"d1_databases": [
 		{
-			"binding": "m8x_table_db",
-			"database_name": "m8x-table-db",
+			"binding": "m8xtable_db",
+			"database_name": "m8xtable-db",
 			"database_id": "3199dfb3-5fc3-4411-b5c5-50fd42a83b85",
 			"migrations_dir": "database/migrations"
 		}
 	],
 	"r2_buckets": [
 		{
-			"bucket_name": "m8x-table-media",
-			"binding": "m8x_table_media",
+			"bucket_name": "m8xtable-media",
+			"binding": "m8xtable_media",
 			"remote": true
 		},
 		{
-			"bucket_name": "m8x-table-media-dev",
-			"binding": "m8x_table_media_dev",
+			"bucket_name": "m8xtable-media-dev",
+			"binding": "m8xtable_media_dev",
 			"remote": true
 		}
 	]

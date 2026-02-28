@@ -1,4 +1,4 @@
-# M8x Table — Test Suite
+# m8xtable — Test Suite
 
 Tests are written in Jest + TypeScript. They cover every feature area in `Plan.md`.
 

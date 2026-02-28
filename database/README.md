@@ -1,4 +1,4 @@
-# M8x Table — Database (Cloudflare D1)
+# m8xtable — Database (Cloudflare D1)
 
 Single shared D1 database for all users (multi-tenant by `owner_user_id`).
 
@@ -6,11 +6,11 @@ Single shared D1 database for all users (multi-tenant by `owner_user_id`).
 
 ```bash
 # Create the D1 database
-npx wrangler d1 create m8x-table-db
+npx wrangler d1 create m8xtable-db
 
 # Run migrations
-npx wrangler d1 migrations apply m8x-table-db --local   # local dev
-npx wrangler d1 migrations apply m8x-table-db --remote  # production
+npx wrangler d1 migrations apply m8xtable-db --local   # local dev
+npx wrangler d1 migrations apply m8xtable-db --remote  # production
 ```
 
 ## Migrations

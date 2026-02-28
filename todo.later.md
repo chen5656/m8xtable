@@ -3,7 +3,7 @@ Now start on implementation. No stop until you finished the whole app with every
 
 Add test based on the plan. 
 
-M1Ntable
+m8xtable
 
 I have the full plan for my app in Plan.md. 
 I have a style sample images:
@@ -46,7 +46,7 @@ I have prompt examples folder, each will present a style of the cover photo.
 - **Paywall sites**: Try JSON-LD first. If parsing fails, show clear error and offer paste-as-text fallback. No attempt to bypass paywalls.
 
 
-| **From share-to-app** | User shares content to Canvas & Clove via OS share sheet; if it is a recipe (URL or text), create new recipe |
+| **From share-to-app** | User shares content to m8xtable via OS share sheet; if it is a recipe (URL or text), create new recipe |
 
 
 ### 6.7 Custom recipe page (HTML generation)

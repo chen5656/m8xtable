@@ -1,4 +1,4 @@
--- M8x Table — Migration 0002: Translation Redesign
+-- m8xtable — Migration 0002: Translation Redesign
 --
 -- Changes:
 --   1. Move translatable text (title, description, tools, tips) out of recipes

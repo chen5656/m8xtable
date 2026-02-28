@@ -1,4 +1,4 @@
--- M8x Table — Initial D1 Schema
+-- m8xtable — Initial D1 Schema
 -- Single shared database for all users
 
 -- ============================================================

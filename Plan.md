@@ -1,4 +1,4 @@
-# Canvas & Clove — Product Plan
+# m8xtable — Product Plan
 
 A cross-platform cooking recipe collection app (iPhone, iPad). **Online only** — no offline mode, no sync layer.
 
@@ -42,7 +42,7 @@ A cross-platform cooking recipe collection app (iPhone, iPad). **Online only** �
 | **Servings** | servings_min, servings_max |
 | **Difficulty** | Easy / Medium / Hard |
 | **Nutrition** | Calories, macros: carbs, protein, fat |
-| **Multi-language** | Per-recipe translations; user adds manually or via AI |
+| **Language** | Stored in the app’s default language only; no per-recipe translations |
 | **Flags** | is_favorite (boolean), is_draft (boolean), is_deleted, deleted_at |
 | **Source** | forked_from_url (if imported from URL) |
 
@@ -94,7 +94,7 @@ Supported providers:
 
 | Provider | Used for |
 |----------|----------|
-| **Gemini** | Recipe generation, translation, image generation, URL parsing |
+| **Gemini** | Recipe generation,translation, image generation, URL parsing |
 | **OpenAI** | Voice-to-text (gpt-4o-audio-preview) |
 | **Claude** | Alternative recipe / text generation |
 | **OpenRouter** | Multi-provider routing (optional) |

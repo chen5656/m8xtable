@@ -1,5 +1,5 @@
 {
-  "name": "m8x-table",
+  "name": "m8xtable",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -22,7 +22,9 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
-    "testMatch": ["**/tests/**/*.test.ts"],
+    "testMatch": [
+      "**/tests/**/*.test.ts"
+    ],
     "globals": {
       "ts-jest": {
         "tsconfig": {

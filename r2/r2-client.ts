@@ -1,5 +1,5 @@
 /**
- * M8x Table — R2 client utility
+ * m8xtable — R2 client utility
  *
  * Uses the AWS S3-compatible API that Cloudflare R2 exposes.
  * Install: npm install @aws-sdk/client-s3 @aws-sdk/s3-request-presigner
@@ -48,7 +48,7 @@ function getClient(): S3Client {
   return _client;
 }
 
-const BUCKET = process.env.R2_BUCKET_NAME ?? 'm8x-table-media-dev';
+const BUCKET = process.env.R2_BUCKET_NAME ?? 'm8xtable-media-dev';
 
 // ---------------------------------------------------------------------------
 // Upload a local file to R2
