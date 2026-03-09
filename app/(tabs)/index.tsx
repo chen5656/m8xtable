@@ -46,52 +46,54 @@ export default function HomeScreen() {
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.appTitle}>M8X Table</Text>
-          <View style={styles.headerActions}>
-            <Text style={styles.headerIcon}>🔍</Text>
-            <Text style={styles.headerIcon}>⚙️</Text>
-            <Text style={styles.headerIconAccent}>＋</Text>
+        <View style={styles.galleryShell}>
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.appTitle}>M8X Table</Text>
+            <View style={styles.headerActions}>
+              <Text style={styles.headerIcon}>🔍</Text>
+              <Text style={styles.headerIcon}>⚙️</Text>
+              <Text style={styles.headerIconAccent}>＋</Text>
+            </View>
           </View>
-        </View>
 
-        {/* Segmented Control */}
-        <View style={styles.segmented}>
-          <View style={styles.menuRow}>
-            <View style={[styles.menuBtn, styles.menuBtnActive]}>
-              <Text style={styles.menuBtnText}>Collections</Text>
-            </View>
-            <View style={styles.menuBtn}>
-              <Text style={styles.menuBtnText}>All</Text>
-            </View>
-          </View>
-          <View style={styles.tagRow}>
-            {TAG_FILTERS.map((tag) => (
-              <View key={tag} style={styles.tagChip}>
-                <Text style={styles.tagText}>{tag}</Text>
+          {/* Segmented Control */}
+          <View style={styles.segmented}>
+            <View style={styles.menuRow}>
+              <View style={[styles.menuBtn, styles.menuBtnActive]}>
+                <Text style={styles.menuBtnText}>Collections</Text>
               </View>
-            ))}
+              <View style={styles.menuBtn}>
+                <Text style={styles.menuBtnText}>All</Text>
+              </View>
+            </View>
+            <View style={styles.tagRow}>
+              {TAG_FILTERS.map((tag) => (
+                <View key={tag} style={styles.tagChip}>
+                  <Text style={styles.tagText}>{tag}</Text>
+                </View>
+              ))}
+            </View>
           </View>
-        </View>
 
-        {/* Content */}
-        {loading && (
-          <View style={styles.center}>
-            <ActivityIndicator size="large" color="#32D583" />
-          </View>
-        )}
-        {error && (
-          <View style={styles.center}>
-            <Text style={styles.errorText}>{error}</Text>
-            <Text style={styles.errorHint}>
-              Make sure the Worker is running: npm run worker:dev
-            </Text>
-          </View>
-        )}
-        {!loading && !error && (
-          <RecipeGrid monthGroups={monthGroups} cols={cols} />
-        )}
+          {/* Content */}
+          {loading && (
+            <View style={styles.center}>
+              <ActivityIndicator size="large" color="#32D583" />
+            </View>
+          )}
+          {error && (
+            <View style={styles.center}>
+              <Text style={styles.errorText}>{error}</Text>
+              <Text style={styles.errorHint}>
+                Make sure the Worker is running: npm run worker:dev
+              </Text>
+            </View>
+          )}
+          {!loading && !error && (
+            <RecipeGrid monthGroups={monthGroups} cols={cols} />
+          )}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -106,9 +108,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 20,
-    paddingTop: Platform.OS === 'web' ? 20 : 10,
-    paddingBottom: 40,
+  },
+  galleryShell: {
+    width: '100%',
+    maxWidth: 1280,
+    alignSelf: 'center',
+    paddingHorizontal: 24,
+    paddingTop: 20,
+    paddingBottom: 80,
   },
   header: {
     flexDirection: 'row',

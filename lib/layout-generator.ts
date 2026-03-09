@@ -134,6 +134,13 @@ export function generateLayout(
     const remaining = itemCount - i - 1;
     let chosen: TileType;
 
+    // Check small screen constraint: at least 6 small images per 8 pictures
+    const chunkStart = Math.floor(i / 8) * 8;
+    const smallsInChunk = assignedTypes.slice(chunkStart).filter(t => t === 'small').length;
+    const itemsInChunk = i - chunkStart;
+    const nonSmallsInChunk = itemsInChunk - smallsInChunk;
+    const forceSmallForSmallScreen = cols <= 3 && nonSmallsInChunk >= 2;
+
     // Every 8th item (0-indexed: positions 0, 8, 16...) should be a big tile
     const isBigPosition = i % 8 === 0 && itemCount >= 3;
 
@@ -156,38 +163,42 @@ export function generateLayout(
         chosen = 'wide';
       }
     } else {
-      // Normal position: weighted random from small types
-      const weights: WeightedChoice[] = [];
-
-      for (const t of availableTypes) {
-        if (isBigTile(t)) continue; // big tiles only at designated positions
-
-        // Check constraints before adding as candidate
-        if (t === 'tall' && countConsecutiveTrailing(assignedTypes, 'tall') >= 2) {
-          continue; // no 3 consecutive tall
-        }
-        if (t === 'wide' && countConsecutiveTrailing(assignedTypes, 'wide') >= 2) {
-          continue; // no 3 consecutive wide
-        }
-
-        // Check tile fits in column count
-        const size = TILE_SIZES[t];
-        if (size.colSpan > cols) continue;
-
-        // Assign weights
-        switch (t) {
-          case 'small': weights.push({ type: t, weight: 5 }); break;
-          case 'wide': weights.push({ type: t, weight: 3 }); break;
-          case 'tall': weights.push({ type: t, weight: 2 }); break;
-          case 'panorama': weights.push({ type: t, weight: 1 }); break;
-          default: weights.push({ type: t, weight: 1 }); break;
-        }
-      }
-
-      if (weights.length === 0) {
-        chosen = 'small'; // fallback
+      if (forceSmallForSmallScreen) {
+        chosen = 'small';
       } else {
-        chosen = weightedPick(weights, rand);
+        // Normal position: weighted random from small types
+        const weights: WeightedChoice[] = [];
+
+        for (const t of availableTypes) {
+          if (isBigTile(t)) continue; // big tiles only at designated positions
+
+          // Check constraints before adding as candidate
+          if (t === 'tall' && countConsecutiveTrailing(assignedTypes, 'tall') >= 2) {
+            continue; // no 3 consecutive tall
+          }
+          if (t === 'wide' && countConsecutiveTrailing(assignedTypes, 'wide') >= 2) {
+            continue; // no 3 consecutive wide
+          }
+
+          // Check tile fits in column count
+          const size = TILE_SIZES[t];
+          if (size.colSpan > cols) continue;
+
+          // Assign weights
+          switch (t) {
+            case 'small': weights.push({ type: t, weight: 5 }); break;
+            case 'wide': weights.push({ type: t, weight: 3 }); break;
+            case 'tall': weights.push({ type: t, weight: 2 }); break;
+            case 'panorama': weights.push({ type: t, weight: 1 }); break;
+            default: weights.push({ type: t, weight: 1 }); break;
+          }
+        }
+
+        if (weights.length === 0) {
+          chosen = 'small'; // fallback
+        } else {
+          chosen = weightedPick(weights, rand);
+        }
       }
     }
 
