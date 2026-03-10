@@ -1,5 +1,5 @@
-export type GridSize = 3 | 4 | 6;
-export type LayoutSpan = [colSpan: number, rowSpan: number];
+type GridSize = 3 | 4 | 6;
+type LayoutSpan = [colSpan: number, rowSpan: number];
 
 const TILE_SIZES = {
   small: { colSpan: 1, rowSpan: 1 },
@@ -655,4 +655,4 @@ function hashSeed(seed: string | number): number {
   }
 
   return h >>> 0 || 0x9e3779b9;
-} export function getTodaySeed(): number { return Number(new Date().toISOString().slice(0, 10).replace(/-/g, '')); }
+}

@@ -1,28 +1,30 @@
 import React from 'react';
 import { View, Image, Text, StyleSheet, Platform, Pressable } from 'react-native';
-import { LayoutItem } from '../lib/layout-generator';
+import { LayoutSpan } from '../lib/layout-generator';
 import { RecipeItem } from '../lib/group-by-month';
 
 interface RecipeTileProps {
   recipe: RecipeItem;
-  tile: LayoutItem;
+  tile: LayoutSpan;
   baseSize: number;
   gap: number;
 }
 
 export function RecipeTile({ recipe, tile, baseSize, gap }: RecipeTileProps) {
-  const width = baseSize * tile.colSpan + gap * (tile.colSpan - 1);
-  const height = baseSize * tile.rowSpan + gap * (tile.rowSpan - 1);
+  const [colSpan, rowSpan] = tile;
+  const width = baseSize * colSpan + gap * (colSpan - 1);
+  const height = baseSize * rowSpan + gap * (rowSpan - 1);
 
   const webGridStyle = Platform.select({
     web: {
-      gridColumn: `span ${tile.colSpan}`,
-      gridRow: `span ${tile.rowSpan}`,
+      gridColumn: `span ${colSpan}`,
+      gridRow: `span ${rowSpan}`,
     } as any,
     default: {
       width,
       height,
     },
+
   });
 
   return (

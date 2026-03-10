@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Platform } from 'react-native';
 import { MonthGroup, RecipeItem } from '../lib/group-by-month';
-import { generateLayout, getTodaySeed, LayoutItem } from '../lib/layout-generator';
+import { updateRecipeListLayout, getTodaySeed, GridSize } from '../lib/layout-generator';
 import { RecipeTile } from './RecipeTile';
 
 interface RecipeGridProps {
@@ -16,7 +16,7 @@ export function RecipeGrid({ monthGroups, cols }: RecipeGridProps) {
   return (
     <View style={styles.container}>
       {monthGroups.map((group) => {
-        const layout = generateLayout(group.recipes.length, cols, seed);
+        const layout = updateRecipeListLayout(cols as GridSize, group.recipes.length, seed);
 
         const gridStyle = Platform.select({
           web: {
